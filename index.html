@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoTracker: 탄소 발자국 계산기</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-gradient-to-b from-green-100 to-green-50 font-sans">
+  <!-- NAV -->
+  <nav class="fixed w-full z-20 bg-white shadow-lg">
+    <div class="max-w-4xl mx-auto flex items-center p-4 space-x-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-800" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C8 2 4 5 4 9c0 5 8 13 8 13s8-8 8-13c0-4-4-7-8-7z" />
+      </svg>
+      <div>
+        <span class="text-3xl font-extrabold text-green-800">EcoTracker</span><br>
+        <span class="text-sm text-green-600 italic">탄소 발자국 관리</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-24 pb-12">
+    <!-- 계산기 섹션 -->
+    <section class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg mb-8">
+      <h1 class="text-3xl font-bold text-green-700 mb-4 text-center">🌎 탄소 발자국 계산기</h1>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <!-- 기본 정보 -->
+        <div>
+          <label class="block mb-1 font-medium">학년</label>
+          <input id="grade" type="number" min="1" max="3" class="w-full border rounded px-3 py-2 focus:ring-green-300" />
+        </div>
+        <div>
+          <label class="block mb-1 font-medium">반</label>
+          <input id="cls" type="number" min="1" max="14" class="w-full border rounded px-3 py-2 focus:ring-green-300" />
+        </div>
+        <div>
+          <label class="block mb-1 font-medium">번호</label>
+          <input id="number" type="number" min="1" max="40" class="w-full border rounded px-3 py-2 focus:ring-green-300" />
+        </div>
+        <div>
+          <label class="block mb-1 font-medium">이름</label>
+          <input id="name" type="text" class="w-full border rounded px-3 py-2 focus:ring-green-300" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <!-- Bus Stops -->
+        <div class="flex items-center border rounded px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 10V5a2 2 0 00-2-2H8a2 2 0 00-2 2v5M6 18h12m-5-5h5m-5 0v5m-4-5v5m-5-5h5" />
+          </svg>
+          <div>
+            <label class="block mb-1 font-medium">버스 정거장 수</label>
+            <input id="busStops" type="number" value="0" class="w-full focus:outline-none" />
+          </div>
+        </div>
+        <!-- Toothbrush Cup -->
+        <div class="flex items-center border rounded px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M19 3v4M5 7h14" />
+          </svg>
+          <div>
+            <label class="block mb-1 font-medium">양치컵 사용 횟수</label>
+            <input id="toothbrushCup" type="number" value="0" class="w-full focus:outline-none" />
+          </div>
+        </div>
+        <!-- Leftover Lunch -->
+        <div class="flex items-center border rounded px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M4 4h16v2H4V4zm0 4h16v2H4V8zm0 4h16v2H4v-2zm0 4h16v2H4v-2z" />
+          </svg>
+          <div>
+            <label class="block mb-1 font-medium">남긴 급식 여부</label>
+            <select id="leftoverLunch" class="w-full focus:outline-none">
+              <option value="no">아니요</option>
+              <option value="yes">네</option>
+              <option value="often">자주</option>
+            </select>
+          </div>
+        </div>
+        <!-- Walking Distance -->
+        <div class="flex items-center border rounded px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 20l-4-4 4-4m4 8l4-4-4-4" />
+          </svg>
+          <div>
+            <label class="block mb-1 font-medium">걷기 거리 (km)</label>
+            <input id="walkingDistance" type="number" step="0.1" value="0" class="w-full focus:outline-none" />
+          </div>
+        </div>
+        <!-- Disposable Items -->
+        <div class="flex items-center border rounded px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 3H5a2 2 0 00-2 2v2h18V5a2 2 0 00-2-2zM3 9v10a2 2 0 002 2h14a2 2 0 002-2V9H3z" />
+          </svg>
+          <div>
+            <label class="block mb-1 font-medium">일회용품 개수</label>
+            <input id="disposableItems" type="number" value="0" class="w-full focus:outline-none" />
+          </div>
+        </div>
+        <!-- Screen Time -->
+        <div class="flex items-center border rounded px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17h4.5M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v5m18 0v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5h18z" />
+          </svg>
+          <div>
+            <label class="block mb-1 font-medium">화면 사용 시간 (h)</label>
+            <input id="screenTime" type="number" step="0.5" value="0" class="w-full focus:outline-none" />
+          </div>
+        </div>
+        <!-- Shower Time -->
+        <div class="flex items-center border rounded px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 13V7a4 4 0 118 0v6m-8 0h8m-4-4V3" />
+          </svg>
+          <div>
+            <label class="block mb-1 font-medium">샤워 시간 (분)</label>
+            <input id="showerTime" type="number" value="0" class="w-full focus:outline-none" />
+          </div>
+        </div>
+        <!-- Meat Frequency -->
+        <div class="flex items-center border rounded px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z" />
+          </svg>
+          <div>
+            <label class="block mb-1 font-medium">고기 섭취 빈도</label>
+            <select id="meat" class="w-full focus:outline-none">
+              <option value="very_often">거의 매일</option>
+              <option value="often">주3-4회</option>
+              <option value="sometimes">주1-2회</option>
+              <option value="rarely">거의 안함</option>
+            </select>
+          </div>
+        </div>
+        <!-- Vegetable Frequency -->
+        <div class="flex items-center border rounded px-3 py-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2c0 5 4.48 10 10 10z" />
+          </svg>
+          <div>
+            <label class="block mb-1 font-medium">채소 섭취 빈도</label>
+            <select id="veg" class="w-full focus:outline-none">
+              <option value="daily">매일</option>
+              <option value="often">주3-4회</option>
+              <option value="sometimes">가끔</option>
+              <option value="rarely">거의 안함</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button id="calculate" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold transition transform hover:scale-105">계산하기</button>
+      <div id="interpretation" class="mt-4 text-center text-lg font-semibold text-gray-800"></div>
+    </section>
+
+    <!-- 결과 섹션 -->
+    <section class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-lg mb-8">
+      <h2 class="text-2xl font-bold text-green-700 mb-4">📊 반 친구들의 탄소 발자국</h2>
+      <p class="text-gray-700 mb-4">각 학년·반·번호·이름별 탄소 배출량을 선으로 연결해 표시합니다. 0~1kg은 '우수', 1~2kg은 '보통', 2kg 이상은 '관리 필요'.</p>
+      <div class="overflow-x-auto mb-6">
+        <table class="w-full border-collapse border border-green-200 text-center">
+          <thead class="bg-green-100">
+            <tr><th class="p-3 border">학년</th><th class="p-3 border">반</th><th class="p-3 border">번호</th><th class="p-3 border">이름</th><th class="p-3 border">탄소(kg)</th></tr>
+          </thead>
+          <tbody id="resultBody"></tbody>
+        </table>
+      </div>
+      <div class="relative mb-4" style="height: 300px;"><canvas id="carbonChart"></canvas></div>
+      <button id="downloadCsv" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold">CSV 다운로드</button>
+    </section>
+  </main>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    // TODO: Firebase 콘솔에서 제공되는 설정값으로 교체하세요
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const entries = [];
+    db.ref('entries').on('child_added', snap => {
+      const e = snap.val();
+      entries.push(e);
+      updateTableAndChart();
+    });
+
+    let carbonChart;
+    function updateTableAndChart() {
+      const tbody = document.getElementById('resultBody'); tbody.innerHTML = '';
+      const labels = [];
+      const data = [];
+      entries.forEach(e => {
+        tbody.innerHTML += `<tr>
+          <td class="p-2 border">${e.grade}</td>
+          <td class="p-2 border">${e.cls}</td>
+          <td class="p-2 border">${e.number}</td>
+          <td class="p-2 border">${e.name}</td>
+          <td class="p-2 border font-semibold text-green-800">${e.carbon}</td>
+        </tr>`;
+        labels.push(e.number);
+        data.push(e.carbon);
+      });
+      if (carbonChart) carbonChart.destroy();
+      const ctx = document.getElementById('carbonChart').getContext('2d');
+      carbonChart = new Chart(ctx, {
+        type: 'line', data: { labels, datasets: [{ data, fill: true, tension: 0.3 }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    document.getElementById('calculate').addEventListener('click', () => {
+      const grade = +document.getElementById('grade').value;
+      const cls   = +document.getElementById('cls').value;
+      const num   = +document.getElementById('number').value;
+      const nm    = document.getElementById('name').value;
+      let carbon = 0;
+      carbon += (+document.getElementById('busStops').value) * 0.05;
+      carbon += (+document.getElementById('toothbrushCup').value) * 0.005;
+      const lunch = document.getElementById('leftoverLunch').value;
+      if (lunch === 'yes') carbon += 0.5;
+      if (lunch === 'often') carbon += 1.2;
+      carbon -= (+document.getElementById('walkingDistance').value) * 0.15;
+      carbon += (+document.getElementById('disposableItems').value) * 0.2;
+      carbon += (+document.getElementById('screenTime').value) * 0.05;
+      carbon += (+document.getElementById('showerTime').value) * 0.01;
+      const meat = document.getElementById('meat').value;
+      if (meat === 'very_often') carbon += 2;
+      if (meat === 'often') carbon += 1;
+      if (meat === 'sometimes') carbon += 0.5;
+      if (meat === 'rarely') carbon += 0.1;
+      const veg = document.getElementById('veg').value;
+      if (veg === 'daily') carbon -= 0.1;
+      if (veg === 'rarely') carbon += 0.2;
+      carbon = Math.max(0, Math.round(carbon * 100) / 100);
+      db.ref('entries').push({ grade, cls, number: num, name: nm, carbon });
+    });
+
+    document.getElementById('downloadCsv').addEventListener('click', () => {
+      if (!entries.length) return;
+      const bom = '\uFEFF'; let csv = bom + '학년,반,번호,이름,탄소(kg)\n';
+      entries.forEach(e => { csv += `${e.grade},${e.cls},${e.number},${e.name},${e.carbon}\n`; });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'carbon_results.csv'; a.click();
+    });
+  </script>
+</body>
+</html>
